@@ -4,8 +4,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { OrganizationSwitcher, SignOutButton, SignedIn } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-
+import LoginButton from "./LoginButton";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { getWeb3, initWeb3 } from "@/app/services/web3";
 function Topbar() {
+  const [account, setAccount] = useState<string | null>(null);
+  const handleGetAccount = useCallback(async () => {
+    try {
+      {
+        initWeb3();
+        const web3 = getWeb3();
+        if (web3) {
+          const accounts = await web3.eth.getAccounts();
+          if (accounts && accounts.length > 0) {
+            const connectedAccount = accounts[0];
+            setAccount(connectedAccount);
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Error while logging in:", error.message);
+    }
+  }, []);
+  useEffect(() => {
+    handleGetAccount();
+  }, []);
   return (
     <nav className="topbar">
       <Link href="/" className="flex item-center gap-4">
@@ -14,7 +38,7 @@ function Topbar() {
       </Link>
 
       <div className="flex items-center gap-1">
-        <div className="block md:hidden">
+        <div className="block ">
           <SignedIn>
             <SignOutButton>
               <div className="flex cursor-pointer">
@@ -28,7 +52,14 @@ function Topbar() {
             </SignOutButton>
           </SignedIn>
         </div>
-
+        {!account ? (
+          <LoginButton setAccount={setAccount} />
+        ) : (
+          <span style={{ color: "white", paddingRight: "1rem" }}>
+            {account}
+          </span>
+        )}
+        <Button>Create Profile</Button>
         <OrganizationSwitcher
           appearance={{
             baseTheme: dark,
