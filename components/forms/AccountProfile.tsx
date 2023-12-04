@@ -18,6 +18,8 @@ import * as z from "zod";
 import Image from "next/image";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { getWeb3, initWeb3 } from "@/app/services/web3";
+import Web3 from "web3";
+import SocialWeb3 from "../socialWeb3.json";
 
 //------------------------------------
 const AccountProfile = () => {
@@ -73,13 +75,25 @@ const AccountProfile = () => {
       fileReader.readAsDataURL(file);
     }
   };
-  function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
-    const values = {
-      ...submittedValues,
-      handle: "@" + submittedValues.name,
-      to: wallet,
-    };
-    console.log(values);
+  async function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
+    const web3 = new Web3(window.ethereum);
+    const contract = await new web3.eth.Contract(
+      SocialWeb3.abi,
+      "0x75ECb1937e1069F6BaD12a66692C93e97ad4CBf1"
+    );
+    const tx = await contract.methods
+      .createProfileNFT([
+        wallet,
+        "@" + submittedValues.name,
+        submittedValues.name,
+        submittedValues.imageURI,
+        submittedValues.bio,
+      ])
+      .send({
+        from: wallet,
+      });
+
+    console.log(tx);
   }
 
   //------------------------------------
