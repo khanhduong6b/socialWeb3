@@ -5,7 +5,7 @@ import Image from "next/image";
 import { OrganizationSwitcher, SignOutButton, SignedIn } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import LoginButton from "./LoginButton";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { getWeb3, initWeb3 } from "@/app/services/web3";
 function Topbar() {
@@ -55,11 +55,16 @@ function Topbar() {
         {!account ? (
           <LoginButton setAccount={setAccount} />
         ) : (
-          <span style={{ color: "white", paddingRight: "1rem" }}>
-            {account}
-          </span>
+          <React.Fragment>
+            <span style={{ color: "white", paddingRight: "1rem" }}>
+              {account}
+            </span>
+            <Button>
+              <Link href="/onboarding">Create Profile</Link>
+            </Button>
+          </React.Fragment>
         )}
-        <Button>Create Profile</Button>
+
         <OrganizationSwitcher
           appearance={{
             baseTheme: dark,

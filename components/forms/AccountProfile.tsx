@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,35 +16,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UserValidation } from "@/lib/validations/user";
 import * as z from "zod";
 import Image from "next/image";
-import { ChangeEvent, useState } from "react";
-import { isBase64Image } from "@/lib/utils";
-//import {useUploadThing } from "@/lib/uploadthing";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { getWeb3, initWeb3 } from "@/app/services/web3";
 
-interface Props {
-  user: {
-    id: string;
-    objectId: string;
-    username: string;
-    name: string;
-    bio: string;
-    image: string;
-  };
-  btnTitle: string;
-}
-
-const AccountProfile = ({ user, btnTitle }: Props) => {
+//------------------------------------
+const AccountProfile = () => {
   const [files, setFiles] = useState<File[]>([]);
-
+  const [wallet, setWallet] = useState<string>("");
   const form = useForm({
     resolver: zodResolver(UserValidation),
     defaultValues: {
-      profile_photo: user?.image || "",
-      name: user?.name || "",
-      username: user?.username || "",
-      bio: user?.bio || "",
+      imageURI: "",
+      name: "",
+      bio: "",
     },
   });
 
+  //------------------------------------
+  const handleGetAccount = useCallback(async () => {
+    try {
+      {
+        initWeb3();
+        const web3 = getWeb3();
+        if (web3) {
+          const accounts = await web3.eth.getAccounts();
+          if (accounts && accounts.length > 0) {
+            const connectedAccount = accounts[0];
+            setWallet(connectedAccount);
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Error while logging in:", error.message);
+    }
+  }, []);
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
     fieldChange: (value: string) => void
@@ -69,17 +73,21 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       fileReader.readAsDataURL(file);
     }
   };
-
-  function onSubmit(values: z.infer<typeof UserValidation>) {
-    const blob = values.profile_photo;
-
-    const hasImageChanged = isBase64Image(blob);
-
-    // if (hasImageChanged) {
-    //   const imgRes;
-    // }
+  function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
+    const values = {
+      ...submittedValues,
+      handle: "@" + submittedValues.name,
+      to: wallet,
+    };
+    console.log(values);
   }
 
+  //------------------------------------
+  useEffect(() => {
+    handleGetAccount();
+  }, []);
+
+  //------------------------------------
   return (
     <Form {...form}>
       <form
@@ -88,7 +96,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       >
         <FormField
           control={form.control}
-          name="profile_photo"
+          name="imageURI"
           render={({ field }) => (
             <FormItem className="flex items-center gap-4">
               <FormLabel className="account-form_image-label">
@@ -132,25 +140,6 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
             <FormItem className="flex flex-col w-full gap-3">
               <FormLabel className="text-base-semibold text-light-2">
                 Name
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  className="account-form_input no-focus"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem className="flex flex-col w-full gap-3">
-              <FormLabel className="text-base-semibold text-light-2">
-                Username
               </FormLabel>
               <FormControl>
                 <Input
