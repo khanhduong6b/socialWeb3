@@ -8,6 +8,8 @@ import LoginButton from "./LoginButton";
 import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { getWeb3, initWeb3 } from "@/app/services/web3";
+import SocialWeb3 from "../socialWeb3.json";
+
 function Topbar() {
   const [account, setAccount] = useState<string | null>(null);
   const handleGetAccount = useCallback(async () => {
@@ -21,6 +23,13 @@ function Topbar() {
             const connectedAccount = accounts[0];
             setAccount(connectedAccount);
           }
+          const contract = await new web3.eth.Contract(
+            SocialWeb3.abi,
+            "0x03E97C93e5e17817bd3253C6312D2610844430C3"
+          );
+
+          const tx = await contract.methods.getUserProfiles(accounts[0]).call();
+          console.log(tx);
         }
       }
     } catch (error: any) {
@@ -59,6 +68,7 @@ function Topbar() {
             <span style={{ color: "white", paddingRight: "1rem" }}>
               {account && `${account.substring(0, 4)}...${account.slice(-4)}`}
             </span>
+
             <Button>
               <Link href="/onboarding">Create Profile</Link>
             </Button>

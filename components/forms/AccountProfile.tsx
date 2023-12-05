@@ -21,7 +21,9 @@ import { getWeb3, initWeb3 } from "@/app/services/web3";
 import Web3 from "web3";
 import SocialWeb3 from "../socialWeb3.json";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import "dotenv/config";
+require("dotenv").config();
 //------------------------------------
 const AccountProfile = () => {
   const router = useRouter();
@@ -84,7 +86,7 @@ const AccountProfile = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        "0x75ECb1937e1069F6BaD12a66692C93e97ad4CBf1"
+        "0x03E97C93e5e17817bd3253C6312D2610844430C3"
       );
 
       const tx = await contract.methods
