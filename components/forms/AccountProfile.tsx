@@ -20,11 +20,14 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { getWeb3, initWeb3 } from "@/app/services/web3";
 import Web3 from "web3";
 import SocialWeb3 from "../socialWeb3.json";
-
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 //------------------------------------
 const AccountProfile = () => {
+  const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [wallet, setWallet] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm({
     resolver: zodResolver(UserValidation),
     defaultValues: {
@@ -77,23 +80,47 @@ const AccountProfile = () => {
   };
   async function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
     const web3 = new Web3(window.ethereum);
-    const contract = await new web3.eth.Contract(
-      SocialWeb3.abi,
-      "0x75ECb1937e1069F6BaD12a66692C93e97ad4CBf1"
-    );
-    const tx = await contract.methods
-      .createProfileNFT([
-        wallet,
-        "@" + submittedValues.name,
-        submittedValues.name,
-        submittedValues.imageURI,
-        submittedValues.bio,
-      ])
-      .send({
-        from: wallet,
-      });
+    setIsLoading(true);
+    try {
+      const contract = await new web3.eth.Contract(
+        SocialWeb3.abi,
+        "0x75ECb1937e1069F6BaD12a66692C93e97ad4CBf1"
+      );
 
-    console.log(tx);
+      const tx = await contract.methods
+        .createProfileNFT([
+          wallet,
+          "@" + submittedValues.name,
+          submittedValues.name,
+          submittedValues.imageURI,
+          submittedValues.bio,
+        ])
+        .send({
+          from: wallet,
+        });
+      toast.success("Profile created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      router.push("/");
+    } catch (error: any) {
+      console.error("Error:", error.message);
+      toast.error("Create profile failed", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setIsLoading(false);
+    }
   }
 
   //------------------------------------
@@ -186,7 +213,7 @@ const AccountProfile = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="bg-primary-500">
+        <Button type="submit" className="bg-primary-500" disabled={isLoading}>
           Submit
         </Button>
       </form>

@@ -57,7 +57,7 @@ function Topbar() {
         ) : (
           <React.Fragment>
             <span style={{ color: "white", paddingRight: "1rem" }}>
-              {account}
+              {account && `${account.substring(0, 4)}...${account.slice(-4)}`}
             </span>
             <Button>
               <Link href="/onboarding">Create Profile</Link>
