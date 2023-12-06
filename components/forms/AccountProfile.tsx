@@ -22,8 +22,6 @@ import Web3 from "web3";
 import SocialWeb3 from "../socialWeb3.json";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import "dotenv/config";
-require("dotenv").config();
 //------------------------------------
 const AccountProfile = () => {
   const router = useRouter();
