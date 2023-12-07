@@ -84,7 +84,7 @@ const AccountProfile = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        "0x03E97C93e5e17817bd3253C6312D2610844430C3"
+        "0x1E77d0B232Cf5357766ebC34cA53CA201BEd0e24"
       );
 
       const tx = await contract.methods
