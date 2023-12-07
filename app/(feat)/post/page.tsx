@@ -20,7 +20,7 @@ export default function Post() {
           if (accounts && accounts.length > 0) {
             const contract = await new web3.eth.Contract(
               SocialWeb3.abi,
-              "0x1E77d0B232Cf5357766ebC34cA53CA201BEd0e24"
+              process.env.SOCIALWEB3_ADDRESS
             );
             const tx = await contract.methods.getPostWithNumber(10).call();
             if (Array.isArray(tx)) {
