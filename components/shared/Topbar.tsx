@@ -26,7 +26,7 @@ function Topbar() {
             setAccount(connectedAccount);
             const contract = await new web3.eth.Contract(
               SocialWeb3.abi,
-              "0x03E97C93e5e17817bd3253C6312D2610844430C3"
+              process.env.SOCIALWEB3_ADDRESS
             );
 
             const tx = await contract.methods
