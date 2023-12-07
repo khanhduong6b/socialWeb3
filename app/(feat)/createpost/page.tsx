@@ -2,13 +2,14 @@
 import { getWeb3, initWeb3 } from "@/app/services/web3";
 import { useCallback, useEffect, useState } from "react";
 import SocialWeb3 from "../../../components/socialWeb3.json";
+import PostForm from "@/components/forms/PostForm";
 type Post = {
   postId: number;
   handle: string;
   content: string;
   timestamp: number;
 };
-export default function Post() {
+export default function CreatePost() {
   const [posts, setPosts] = useState<Post[]>([]);
   const handleFetchPost = useCallback(async () => {
     try {
@@ -48,46 +49,8 @@ export default function Post() {
   }, []);
   return (
     <div>
-      <h1 className="head-text text-left">POSTS</h1>
-      {posts.map((ele) => {
-        return (
-          <div
-            key={ele.postId}
-            style={{
-              border: "2px solid lightgray",
-              color: "white",
-              margin: "4rem 2rem",
-              padding: "1rem",
-              minHeight: "14rem",
-              borderRadius: "8px",
-            }}
-          >
-            <div
-              style={{
-                borderBottom: "1px solid #ccc",
-                paddingBottom: "0.7rem",
-              }}
-            >
-              <h2
-                style={{
-                  padding: "0.2rem 0.8rem",
-                  fontSize: "1.2rem",
-                  fontWeight: "bold",
-                  display: "inline-block",
-                  border: "1px solid #eee",
-                  borderRadius: "20px",
-                }}
-              >
-                {ele.handle ? ele.handle : "@temp"}
-              </h2>
-            </div>
-            <p style={{ padding: "1rem" }}>
-              {" "}
-              {ele.content ? ele.content : "TEMP CONTENT"}
-            </p>
-          </div>
-        );
-      })}
+      <h1 className="head-text text-left">Create Post</h1>
+      <PostForm />
     </div>
   );
 }

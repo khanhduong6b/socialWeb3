@@ -84,9 +84,9 @@ const AccountProfile = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        process.env.SOCIALWEB3_ADDRESS
+        process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
       );
-
+      console.log(submittedValues);
       const tx = await contract.methods
         .createProfileNFT([
           wallet,
@@ -107,7 +107,9 @@ const AccountProfile = () => {
         draggable: true,
         progress: undefined,
       });
-      router.push("/");
+      setTimeout(() => {
+        router.push("/");
+      }, 5000);
     } catch (error: any) {
       console.error("Error:", error.message);
       toast.error("Create profile failed", {

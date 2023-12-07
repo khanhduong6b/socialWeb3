@@ -12,8 +12,9 @@ import SocialWeb3 from "../socialWeb3.json";
 
 function Topbar() {
   const [account, setAccount] = useState<string | null>(null);
-  const [profiles, setProfiles] = useState<number[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<number>();
+  const [profiles, setProfiles] = useState<any>();
+  const [profilesIds, setProfilesIds] = useState<number[]>([]);
+  const [selectedProfileId, setSelectedProfileId] = useState<number>(0);
   const handleGetAccount = useCallback(async () => {
     try {
       {
@@ -26,7 +27,7 @@ function Topbar() {
             setAccount(connectedAccount);
             const contract = await new web3.eth.Contract(
               SocialWeb3.abi,
-              process.env.SOCIALWEB3_ADDRESS
+              process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
             );
 
             const tx = await contract.methods
@@ -34,8 +35,35 @@ function Topbar() {
               .call();
             if (Array.isArray(tx)) {
               const result = tx.map((profileId) => Number(profileId));
-              setProfiles(result);
+              setProfilesIds(result);
+              setSelectedProfileId;
             }
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Error while logging in:", error.message);
+    }
+  }, []);
+  const handleGetProfile = useCallback(async () => {
+    try {
+      {
+        initWeb3();
+        const web3 = getWeb3();
+        if (web3) {
+          const accounts = await web3.eth.getAccounts();
+          if (accounts && accounts.length > 0) {
+            const connectedAccount = accounts[0];
+            setAccount(connectedAccount);
+            const contract = await new web3.eth.Contract(
+              SocialWeb3.abi,
+              process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
+            );
+
+            const tx = await contract.methods
+              .getProfileNFTData(selectedProfileId)
+              .call();
+            console.log(tx);
           }
         }
       }
@@ -46,6 +74,9 @@ function Topbar() {
   useEffect(() => {
     handleGetAccount();
   }, []);
+  useEffect(() => {
+    if (selectedProfileId > 0) handleGetProfile();
+  }, [selectedProfileId]);
   return (
     <nav className="topbar">
       <Link href="/" className="flex item-center gap-4">
@@ -93,26 +124,29 @@ function Topbar() {
                 justifyContent: "space-between",
               }}
             >
-              <span style={{ color: "white" }}>Profile</span>
-              <select
-                style={{
-                  backgroundColor: "#121417",
-                  color: "white",
-                  padding: "0.7rem",
-                }}
-                onChange={(e) => {
-                  const selectedProfile = parseInt(e.target.value);
-                  setSelectedProfile(selectedProfile);
-                }}
-                value={selectedProfile || ""}
-              >
-                {profiles.map((profileId) => (
-                  <option key={profileId} value={profileId}>
-                    {profileId}
-                  </option>
-                ))}
-              </select>
-
+              {profilesIds.length > 0 ? (
+                <React.Fragment>
+                  <span style={{ color: "white" }}>Profile</span>
+                  <select
+                    style={{
+                      backgroundColor: "#121417",
+                      color: "white",
+                      padding: "0.7rem",
+                    }}
+                    onChange={(e) => {
+                      const selectedId = parseInt(e.target.value);
+                      setSelectedProfileId(selectedId);
+                    }}
+                    value={selectedProfileId || ""}
+                  >
+                    {profilesIds.map((profileId) => (
+                      <option key={profileId} value={profileId}>
+                        {profileId}
+                      </option>
+                    ))}
+                  </select>
+                </React.Fragment>
+              ) : null}
               <Button style={{ marginLeft: "1rem" }}>
                 <Link href="/onboarding">Create Profile</Link>
               </Button>
