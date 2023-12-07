@@ -1,7 +1,7 @@
 "use client";
-import { getWeb3, initWeb3 } from "@/app/services/web3";
 import { useCallback, useEffect, useState } from "react";
-import SocialWeb3 from "../../../components/socialWeb3.json";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Post() {
   const [profile, setProfile] = useState<any>();
@@ -65,6 +65,10 @@ export default function Post() {
             <br />
           </p>
           <p>{profile.bio}</p>
+
+          <Button style={{ margin: "5rem 0" }}>
+            <Link href="/updateprofile">Update Profile</Link>
+          </Button>
         </div>
       ) : (
         <h5>LOADING....</h5>
