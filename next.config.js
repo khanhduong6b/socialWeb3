@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    SOCIALWEB3_ADDRESS: "0x1E77d0B232Cf5357766ebC34cA53CA201BEd0e24",
+  },
   experimental: {
     serverActions: true,
     serverComponentsExternalPackages: ["mongoose"],

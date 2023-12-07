@@ -57,7 +57,7 @@ const PostForm = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
+        process.env.SOCIALWEB3_ADDRESS
       );
       const handle = sessionStorage.getItem("handle");
       const tx = await contract.methods

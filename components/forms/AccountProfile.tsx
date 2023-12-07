@@ -84,7 +84,7 @@ const AccountProfile = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
+        process.env.SOCIALWEB3_ADDRESS
       );
       console.log(submittedValues);
       const tx = await contract.methods
