@@ -12,7 +12,7 @@ import SocialWeb3 from "../socialWeb3.json";
 
 function Topbar() {
   const [account, setAccount] = useState<string | null>(null);
-  const [profiles, setProfiles] = useState<any>();
+  const [handle, setHandle] = useState<string>();
   const [profilesIds, setProfilesIds] = useState<number[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<number>(0);
   const handleGetAccount = useCallback(async () => {
@@ -63,11 +63,19 @@ function Topbar() {
             const tx: any = await contract.methods
               .getProfileNFTData(selectedProfileId)
               .call();
-            if (sessionStorage.getItem("handle")) {
-              sessionStorage.removeItem("handle");
-              sessionStorage.setItem("handle", tx.handle);
+            setHandle(tx.handle);
+            if (
+              tx &&
+              sessionStorage.getItem("profile") &&
+              sessionStorage.getItem("id")
+            ) {
+              sessionStorage.removeItem("profile");
+              sessionStorage.removeItem("id");
+              sessionStorage.setItem("id", selectedProfileId + "");
+              sessionStorage.setItem("profile", JSON.stringify(tx));
             } else {
-              sessionStorage.setItem("handle", tx.handle);
+              sessionStorage.setItem("id", selectedProfileId + "");
+              sessionStorage.setItem("profile", JSON.stringify(tx));
             }
           }
         }
@@ -109,7 +117,7 @@ function Topbar() {
         ) : (
           <div
             style={{
-              width: "22rem",
+              minWidth: "25rem",
               display: "flex",
               flexFlow: "row",
               alignItems: "center",
@@ -122,7 +130,7 @@ function Topbar() {
             <div
               className="custom-select"
               style={{
-                width: "17rem",
+                minWidth: "23rem",
                 display: "flex",
                 flexFlow: "row",
                 alignItems: "center",
@@ -131,7 +139,7 @@ function Topbar() {
             >
               {profilesIds.length > 0 ? (
                 <React.Fragment>
-                  <span style={{ color: "white" }}>Profile</span>
+                  <span style={{ color: "white" }}>{handle}</span>
                   <select
                     style={{
                       backgroundColor: "#121417",

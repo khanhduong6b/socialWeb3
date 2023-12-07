@@ -23,9 +23,11 @@ import SocialWeb3 from "../socialWeb3.json";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 //------------------------------------
-const AccountProfile = () => {
+const UpdateProfile = () => {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
+  const [profile, setProfile] = useState<any>();
+  const [id, setId] = useState<string>("");
   const [wallet, setWallet] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm({
@@ -36,6 +38,21 @@ const AccountProfile = () => {
       bio: "",
     },
   });
+  const handleGetProfile = useCallback(() => {
+    const profileString = sessionStorage.getItem("profile");
+    const id = sessionStorage.getItem("id");
+    if (id) setId(id);
+    const profileData = profileString ? JSON.parse(profileString) : null;
+    setProfile(profileData);
+    if (profileData) {
+      form.setValue("imageURI", profileData.imageURI);
+      form.setValue("name", profileData.name);
+      form.setValue("bio", profileData.bio);
+    }
+  }, [form]);
+  useEffect(() => {
+    handleGetProfile();
+  }, []);
 
   //------------------------------------
   const handleGetAccount = useCallback(async () => {
@@ -79,17 +96,19 @@ const AccountProfile = () => {
     }
   };
   async function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
+    if (!id || !submittedValues || !profile) return;
     const web3 = new Web3(window.ethereum);
     setIsLoading(true);
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        process.env.SOCIALWEB3_ADDRESS
+        process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
       );
+      const handle = "@" + submittedValues.name;
       const tx = await contract.methods
-        .createProfileNFT([
+        .updateProfile(id, [
           wallet,
-          "@" + submittedValues.name,
+          handle,
           submittedValues.name,
           submittedValues.imageURI,
           submittedValues.bio,
@@ -222,4 +241,4 @@ const AccountProfile = () => {
   );
 };
 
-export default AccountProfile;
+export default UpdateProfile;
