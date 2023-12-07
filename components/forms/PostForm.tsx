@@ -23,7 +23,8 @@ import { PostValidation } from "@/lib/validations/post";
 //------------------------------------
 const PostForm = () => {
   const router = useRouter();
-  const [wallet, setWallet] = useState<string>();
+  const [wallet, setWallet] = useState<string>("");
+  const [handle, setHandle] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm({
     resolver: zodResolver(PostValidation),
@@ -59,13 +60,15 @@ const PostForm = () => {
         SocialWeb3.abi,
         process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
       );
-      const handle = sessionStorage.getItem("handle");
+      const profileString = sessionStorage.getItem("profile");
+      if (!profileString) return;
+      const profileData = profileString ? JSON.parse(profileString) : null;
+      const handle = profileData ? profileData.handle : null;
       const tx = await contract.methods
         .createPost(handle, submittedValues.content)
         .send({
           from: wallet,
         });
-      console.log(tx);
       toast.success("Create post Successfully!", {
         position: "top-right",
         autoClose: 3000,

@@ -34,7 +34,6 @@ export default function Post() {
                 return temp;
               });
               setPosts(result);
-              console.log(result);
             }
           }
         }
@@ -50,6 +49,7 @@ export default function Post() {
     <div>
       <h1 className="head-text text-left">POSTS</h1>
       {posts.map((ele) => {
+        if (!ele.postId) return;
         return (
           <div
             key={ele.postId}

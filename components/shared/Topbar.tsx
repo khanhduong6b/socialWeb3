@@ -63,11 +63,12 @@ function Topbar() {
             const tx: any = await contract.methods
               .getProfileNFTData(selectedProfileId)
               .call();
-            if (sessionStorage.getItem("handle")) {
-              sessionStorage.removeItem("handle");
-              sessionStorage.setItem("handle", tx.handle);
+
+            if (tx && sessionStorage.getItem("profile")) {
+              sessionStorage.removeItem("profile");
+              sessionStorage.setItem("profile", JSON.stringify(tx));
             } else {
-              sessionStorage.setItem("handle", tx.handle);
+              sessionStorage.setItem("profile", JSON.stringify(tx));
             }
           }
         }

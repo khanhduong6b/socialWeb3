@@ -86,7 +86,6 @@ const AccountProfile = () => {
         SocialWeb3.abi,
         process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
       );
-      console.log(submittedValues);
       const tx = await contract.methods
         .createProfileNFT([
           wallet,
