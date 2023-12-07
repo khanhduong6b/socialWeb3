@@ -12,6 +12,8 @@ import SocialWeb3 from "../socialWeb3.json";
 
 function Topbar() {
   const [account, setAccount] = useState<string | null>(null);
+  const [profiles, setProfiles] = useState<number[]>([]);
+  const [selectedProfile, setSelectedProfile] = useState<number>();
   const handleGetAccount = useCallback(async () => {
     try {
       {
@@ -22,14 +24,19 @@ function Topbar() {
           if (accounts && accounts.length > 0) {
             const connectedAccount = accounts[0];
             setAccount(connectedAccount);
-          }
-          const contract = await new web3.eth.Contract(
-            SocialWeb3.abi,
-            "0x03E97C93e5e17817bd3253C6312D2610844430C3"
-          );
+            const contract = await new web3.eth.Contract(
+              SocialWeb3.abi,
+              "0x03E97C93e5e17817bd3253C6312D2610844430C3"
+            );
 
-          const tx = await contract.methods.getUserProfiles(accounts[0]).call();
-          console.log(tx);
+            const tx = await contract.methods
+              .getUserProfiles(accounts[0])
+              .call();
+            if (Array.isArray(tx)) {
+              const result = tx.map((profileId) => Number(profileId));
+              setProfiles(result);
+            }
+          }
         }
       }
     } catch (error: any) {
@@ -64,15 +71,53 @@ function Topbar() {
         {!account ? (
           <LoginButton setAccount={setAccount} />
         ) : (
-          <React.Fragment>
-            <span style={{ color: "white", paddingRight: "1rem" }}>
+          <div
+            style={{
+              width: "22rem",
+              display: "flex",
+              flexFlow: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span style={{ color: "white", paddingRight: "2rem" }}>
               {account && `${account.substring(0, 4)}...${account.slice(-4)}`}
             </span>
+            <div
+              className="custom-select"
+              style={{
+                width: "17rem",
+                display: "flex",
+                flexFlow: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <span style={{ color: "white" }}>Profile</span>
+              <select
+                style={{
+                  backgroundColor: "#121417",
+                  color: "white",
+                  padding: "0.7rem",
+                }}
+                onChange={(e) => {
+                  const selectedProfile = parseInt(e.target.value);
+                  setSelectedProfile(selectedProfile);
+                }}
+                value={selectedProfile || ""}
+              >
+                {profiles.map((profileId) => (
+                  <option key={profileId} value={profileId}>
+                    {profileId}
+                  </option>
+                ))}
+              </select>
 
-            <Button>
-              <Link href="/onboarding">Create Profile</Link>
-            </Button>
-          </React.Fragment>
+              <Button style={{ marginLeft: "1rem" }}>
+                <Link href="/onboarding">Create Profile</Link>
+              </Button>
+            </div>
+          </div>
         )}
 
         <OrganizationSwitcher
