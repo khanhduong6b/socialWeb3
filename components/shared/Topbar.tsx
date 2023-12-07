@@ -36,7 +36,7 @@ function Topbar() {
             if (Array.isArray(tx)) {
               const result = tx.map((profileId) => Number(profileId));
               setProfilesIds(result);
-              setSelectedProfileId;
+              setSelectedProfileId(result[0]);
             }
           }
         }
@@ -46,6 +46,7 @@ function Topbar() {
     }
   }, []);
   const handleGetProfile = useCallback(async () => {
+    if (selectedProfileId <= 0) return;
     try {
       {
         initWeb3();
@@ -59,18 +60,22 @@ function Topbar() {
               SocialWeb3.abi,
               process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
             );
-
-            const tx = await contract.methods
+            const tx: any = await contract.methods
               .getProfileNFTData(selectedProfileId)
               .call();
-            console.log(tx);
+            if (sessionStorage.getItem("handle")) {
+              sessionStorage.removeItem("handle");
+              sessionStorage.setItem("handle", tx.handle);
+            } else {
+              sessionStorage.setItem("handle", tx.handle);
+            }
           }
         }
       }
     } catch (error: any) {
       console.error("Error while logging in:", error.message);
     }
-  }, []);
+  }, [selectedProfileId]);
   useEffect(() => {
     handleGetAccount();
   }, []);

@@ -11,12 +11,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserValidation } from "@/lib/validations/user";
 import * as z from "zod";
-import Image from "next/image";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getWeb3, initWeb3 } from "@/app/services/web3";
 import Web3 from "web3";
 import SocialWeb3 from "../socialWeb3.json";
@@ -26,7 +23,7 @@ import { PostValidation } from "@/lib/validations/post";
 //------------------------------------
 const PostForm = () => {
   const router = useRouter();
-  const [content, setContent] = useState<string>();
+  const [wallet, setWallet] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm({
     resolver: zodResolver(PostValidation),
@@ -44,6 +41,8 @@ const PostForm = () => {
         if (web3) {
           const accounts = await web3.eth.getAccounts();
           if (accounts && accounts.length > 0) {
+            const connectedAccount = accounts[0];
+            setWallet(connectedAccount);
           }
         }
       }
@@ -60,10 +59,13 @@ const PostForm = () => {
         SocialWeb3.abi,
         process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
       );
-
-      // const tx = await contract.methods.send({
-      //   from: wallet,
-      // });
+      const handle = sessionStorage.getItem("handle");
+      const tx = await contract.methods
+        .createPost(handle, submittedValues.content)
+        .send({
+          from: wallet,
+        });
+      console.log(tx);
       toast.success("Create post Successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -73,9 +75,9 @@ const PostForm = () => {
         draggable: true,
         progress: undefined,
       });
-      setTimeout(() => {
-        router.push("/");
-      }, 3000);
+      // setTimeout(() => {
+      //   router.push("/");
+      // }, 5000);
     } catch (error: any) {
       console.error("Error:", error.message);
       toast.error("Create Post failed", {

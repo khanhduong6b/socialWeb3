@@ -22,7 +22,7 @@ export default function Post() {
               SocialWeb3.abi,
               process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
             );
-            const tx = await contract.methods.getPostWithNumber(10).call();
+            const tx = await contract.methods.getPostWithNumber(0).call();
             if (Array.isArray(tx)) {
               const result = tx.map((ele: any) => {
                 const temp: Post = {
