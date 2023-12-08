@@ -12,7 +12,7 @@ import SocialWeb3 from "../socialWeb3.json";
 
 function Topbar() {
   const [account, setAccount] = useState<string | null>(null);
-  const [handle, setHandle] = useState<string>();
+  const [handles, setHandles] = useState<string[]>([]);
   const [profilesIds, setProfilesIds] = useState<number[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<number>(0);
   const handleGetAccount = useCallback(async () => {
@@ -63,7 +63,6 @@ function Topbar() {
             const tx: any = await contract.methods
               .getProfileNFTData(selectedProfileId)
               .call();
-            setHandle(tx.handle);
             if (
               tx &&
               sessionStorage.getItem("profile") &&
@@ -84,9 +83,36 @@ function Topbar() {
       console.error("Error while logging in:", error.message);
     }
   }, [selectedProfileId]);
+  const handleGetHandles = useCallback(async () => {
+    if (!account) return;
+    try {
+      {
+        initWeb3();
+        const web3 = getWeb3();
+        if (web3) {
+          const accounts = await web3.eth.getAccounts();
+          if (accounts && accounts.length > 0) {
+            const connectedAccount = accounts[0];
+            setAccount(connectedAccount);
+            const contract = await new web3.eth.Contract(
+              SocialWeb3.abi,
+              process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
+            );
+            const tx: any = await contract.methods
+              .getUserHandles(account)
+              .call();
+            setHandles(tx);
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Error while logging in:", error.message);
+    }
+  }, [account]);
   useEffect(() => {
     handleGetAccount();
-  }, []);
+    handleGetHandles();
+  }, [account]);
   useEffect(() => {
     if (selectedProfileId > 0) handleGetProfile();
   }, [selectedProfileId]);
@@ -130,7 +156,7 @@ function Topbar() {
             <div
               className="custom-select"
               style={{
-                minWidth: "23rem",
+                minWidth: "20rem",
                 display: "flex",
                 flexFlow: "row",
                 alignItems: "center",
@@ -139,7 +165,6 @@ function Topbar() {
             >
               {profilesIds.length > 0 ? (
                 <React.Fragment>
-                  <span style={{ color: "white" }}>{handle}</span>
                   <select
                     style={{
                       backgroundColor: "#121417",
@@ -152,9 +177,9 @@ function Topbar() {
                     }}
                     value={selectedProfileId || ""}
                   >
-                    {profilesIds.map((profileId) => (
+                    {profilesIds.map((profileId, index) => (
                       <option key={profileId} value={profileId}>
-                        {profileId}
+                        {handles[index]}
                       </option>
                     ))}
                   </select>

@@ -78,9 +78,9 @@ const PostForm = () => {
         draggable: true,
         progress: undefined,
       });
-      // setTimeout(() => {
-      //   router.push("/");
-      // }, 5000);
+      setTimeout(() => {
+        router.push("/");
+      }, 5000);
     } catch (error: any) {
       console.error("Error:", error.message);
       toast.error("Create Post failed", {
