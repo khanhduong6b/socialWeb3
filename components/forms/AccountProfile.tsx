@@ -32,6 +32,7 @@ const AccountProfile = () => {
     resolver: zodResolver(UserValidation),
     defaultValues: {
       imageURI: "",
+      handle: "",
       name: "",
       bio: "",
     },
@@ -79,8 +80,18 @@ const AccountProfile = () => {
     }
   };
   async function onSubmit(submittedValues: z.infer<typeof UserValidation>) {
-    const web3 = new Web3(window.ethereum);
+    if (
+      !submittedValues.bio ||
+      !submittedValues.handle ||
+      !submittedValues.imageURI ||
+      !submittedValues.name
+    )
+      return;
+    const regex = /^[^\s\d!@#$%^&*()_+={}\[\]:;<>,.?\\/~`]{2,50}$/;
+    const isValid = regex.test(submittedValues.handle);
+    if (!isValid) return;
     setIsLoading(true);
+    const web3 = new Web3(window.ethereum);
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
@@ -89,7 +100,7 @@ const AccountProfile = () => {
       const tx = await contract.methods
         .createProfileNFT([
           wallet,
-          "@" + submittedValues.name,
+          "@" + submittedValues.handle,
           submittedValues.name,
           submittedValues.imageURI,
           submittedValues.bio,
@@ -194,7 +205,25 @@ const AccountProfile = () => {
             </FormItem>
           )}
         />
-
+        <FormField
+          control={form.control}
+          name="handle"
+          render={({ field }) => (
+            <FormItem className="flex flex-col w-full gap-3">
+              <FormLabel className="text-base-semibold text-light-2">
+                Handle
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  className="account-form_input no-focus"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="bio"
