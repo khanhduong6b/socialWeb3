@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    SOCIALWEB3_ADDRESS: "0x1E77d0B232Cf5357766ebC34cA53CA201BEd0e24",
+    SOCIALWEB3_ADDRESS: "0x9b3524B2FF12F72440A9b6baeB7202aCe4577381",
   },
   experimental: {
     serverActions: true,

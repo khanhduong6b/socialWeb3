@@ -188,11 +188,11 @@ const AccountProfile = () => {
         />
         <FormField
           control={form.control}
-          name="name"
+          name="handle"
           render={({ field }) => (
             <FormItem className="flex flex-col w-full gap-3">
               <FormLabel className="text-base-semibold text-light-2">
-                Name
+                Handle
               </FormLabel>
               <FormControl>
                 <Input
@@ -207,11 +207,11 @@ const AccountProfile = () => {
         />
         <FormField
           control={form.control}
-          name="handle"
+          name="name"
           render={({ field }) => (
             <FormItem className="flex flex-col w-full gap-3">
               <FormLabel className="text-base-semibold text-light-2">
-                Handle
+                Name
               </FormLabel>
               <FormControl>
                 <Input

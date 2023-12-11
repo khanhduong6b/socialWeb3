@@ -102,7 +102,7 @@ const UpdateProfile = () => {
     try {
       const contract = await new web3.eth.Contract(
         SocialWeb3.abi,
-        process.env.NEXT_PUBLIC_SOCIALWEB3_ADDRESS
+        process.env.SOCIALWEB3_ADDRESS
       );
       const handle = "@" + submittedValues.name;
       const tx = await contract.methods
