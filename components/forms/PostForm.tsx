@@ -64,7 +64,7 @@ const PostForm = () => {
       if (!profileString) return;
       const profileData = profileString ? JSON.parse(profileString) : null;
       const handle = profileData ? profileData.handle : null;
-      const tx = await contract.methods
+      const tx = await contract.methods // @ts-ignore
         .createPost(handle, submittedValues.content)
         .send({
           from: wallet,

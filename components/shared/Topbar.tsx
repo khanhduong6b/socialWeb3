@@ -30,7 +30,7 @@ function Topbar() {
               process.env.SOCIALWEB3_ADDRESS
             );
 
-            const tx = await contract.methods
+            const tx = await contract.methods // @ts-ignore
               .getUserProfiles(accounts[0])
               .call();
             if (Array.isArray(tx)) {
@@ -60,7 +60,8 @@ function Topbar() {
               SocialWeb3.abi,
               process.env.SOCIALWEB3_ADDRESS
             );
-            const tx: any = await contract.methods
+
+            const tx: any = await contract.methods // @ts-ignore
               .getProfileNFTData(selectedProfileId)
               .call();
             if (
@@ -98,7 +99,7 @@ function Topbar() {
               SocialWeb3.abi,
               process.env.SOCIALWEB3_ADDRESS
             );
-            const tx: any = await contract.methods
+            const tx: any = await contract.methods // @ts-ignore
               .getUserHandles(account)
               .call();
             setHandles(tx);

@@ -105,7 +105,7 @@ const UpdateProfile = () => {
         process.env.SOCIALWEB3_ADDRESS
       );
       const handle = "@" + submittedValues.name;
-      const tx = await contract.methods
+      const tx = await contract.methods // @ts-ignore
         .updateProfile(id, [
           wallet,
           handle,
@@ -151,7 +151,7 @@ const UpdateProfile = () => {
   //------------------------------------
   return (
     <Form {...form}>
-      <form
+      <form // @ts-ignore
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col justify-start gap-10"
       >

@@ -97,7 +97,8 @@ const AccountProfile = () => {
         SocialWeb3.abi,
         process.env.SOCIALWEB3_ADDRESS
       );
-      const tx = await contract.methods
+
+      const tx = await contract.methods // @ts-ignore
         .createProfileNFT([
           wallet,
           "@" + submittedValues.handle,
